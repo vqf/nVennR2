@@ -298,7 +298,7 @@ String getVennSvg(List nVennObj) {
     }
   }
   
-  return bl.toSVG().getText();
+  return bl.tosvg();
 }
 
 

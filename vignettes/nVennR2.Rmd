@@ -42,9 +42,7 @@ subsuid <- function(regex, strng){
 
 knit_print.nVennR2 = function(x, ...) {
     g <- getVennSvg(x)
-    s <- subsuid('[\\.\\#](.+?)\\s*\\{', g)
-    s <- subsuid('bl\\d+', s)
-    knitr::asis_output(s)
+    knitr::asis_output(g)
 }
 # register the method
 registerS3method("knit_print", "nVennObj", knit_print.nVennR2)

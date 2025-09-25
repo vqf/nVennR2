@@ -1,9 +1,17 @@
 ---
-output: github_document
+title: "Using nVennR2 to generate and explore n-dimensional, quasi-proportional Venn diagrams"
+author: "Victor Quesada"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Using nVennR2 to generate and explore n-dimensional, quasi-proportional Venn diagrams}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 
 ```{r setup, F, include = FALSE}
 knitr::opts_chunk$set(
@@ -20,13 +28,13 @@ uuid <- function() {
 
 subsuid <- function(regex, strng){
   l <- gregexpr(regex, strng, perl = T)
-  for (x in regmatches(strng, l)){
+  for (x in regmatches(strng, l)){ 
     m <- regexpr('([^\\{ \\.\\#]+)', x, perl = T)
     names <- regmatches(x, m)
     gstr = strng
     for (name in names){
       nname <- paste('([^\\d\\w<>]', name, ')', sep="")
-      gstr <- gsub(nname, paste('\\1', '_', uuid(), sep=""), gstr, perl = T)
+      gstr <- gsub(nname, paste('\\1', '_', uuid(), sep=""), gstr, perl = T) 
     }
     return(gstr)
   }
@@ -34,9 +42,7 @@ subsuid <- function(regex, strng){
 
 knit_print.nVennR2 = function(x, ...) {
     g <- getVennSvg(x)
-    s <- subsuid('[\\.\\#](.+?)\\s*\\{', g)
-    s <- subsuid('bl\\d+', s)
-    knitr::asis_output(s)
+    knitr::asis_output(g)
 }
 # register the method
 registerS3method("knit_print", "nVennObj", knit_print.nVennR2)
@@ -52,17 +58,17 @@ local({
 
 # Introduction
 
-Proportional Venn diagrams show the relationships between several sets in a compact representation. Each `set` is depicted as a contiguous area proportional to the number of elements it contains, delimited by a closed curve. Those curves may intersect, creating `regions` that belong to one or more sets. To be accurate, the area of each region should be proportional to the number of elements it contains.
+Proportional Venn diagrams show the relationships between several sets in a compact representation. Each `set` is depicted as a contiguous area proportional to the number of elements it contains, delimited by a closed curve. Those curves may intersect, creating `regions` that belong to one or more sets. To be accurate, the area of each region should be proportional to the number of elements it contains. 
 
 Representing proportional Venn diagrams with more than two sets is not trivial, as the number of potential regions grows exponentially with the number of sets. The `nVenn` algorithm represents regions as circles with the desired areas and then encloses those circles in curves to create the sets. The resulting diagrams are approximately proportional and can represent an arbitrary number of sets.
 
 # Input
 
-To make a Venn diagram, nVennR2 provides the `nVennDiagram` function. Its input is either a list of lists, a text with the shape of a table or a previously generated nVenn object.
+To make a Venn diagram, nVennR2 provides the `nVennDiagram` function. Its input is either a list of lists, a text with the shape of a table or a previously generated nVenn object. 
 
 ## List of lists
 
-This is the same form of input that the first version of nVennR2 used. Each inner list has a name which is interpreted as the name of the set. The inner list itself contains the elements in that set. The algorithm accepts an arbitrary number of sets, although there is a hard limit in the code of 20 sets. Diagrams of that size would take a very long time to build, and probably would be of little use.
+This is the same form of input that the first version of nVennR2 used. Each inner list has a name which is interpreted as the name of the set. The inner list itself contains the elements in that set. The algorithm accepts an arbitrary number of sets, although there is a hard limit in the code of 20 sets. Diagrams of that size would take a very long time to build, and probably would be of little use. 
 
 ```{r setup}
 library(nVennR2)
@@ -196,3 +202,4 @@ myv2 #noshow
 myv2 <- rotateVenn(myv2, 30)
 myv2 #noshow
 ```
+
