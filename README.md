@@ -5,7 +5,7 @@
 
 This package offers an interface to the `nVenn2` algorithm to create generalized,
 quasi-proportional Venn diagrams. The `nVenn2` algorithm differs substantially
-from the [`nVenn`](https://github.com/vqf/nVennR) algorithm, so that the time 
+from the [`nVenn`](https://github.com/vqf/nVennR) algorithm in that the time 
 needed to produce a diagram scales
 with the number of non-empty regions, rather than with the number of sets. In 
 practice, this means that very complex diagrams can be generated with the 
@@ -100,7 +100,9 @@ b q d
 c  e'
 myv2 <- nVennDiagram(toVenn, byCol = 1, verbose = F)
 ```
-
+If instead of a text table we pass an existing file path, `nVennDiagram`
+will use the content of that file. This means that the file must be
+text-only.
 
 ## Object
 
