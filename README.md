@@ -1,6 +1,16 @@
 
 [![R-hub](https://github.com/vqf/nVennR2/actions/workflows/rhub.yaml/badge.svg)](https://github.com/vqf/nVennR2/actions/workflows/rhub.yaml)
 
+# nVennR2
+
+This package offers an interface to the `nVenn2` algorithm to create generalized,
+quasi-proportional Venn diagrams. The `nVenn2` algorithm differs substantially
+from the [`nVenn`](https://github.com/vqf/nVennR) algorithm, so that the time 
+needed to produce a diagram scales
+with the number of non-empty regions, rather than with the number of sets. In 
+practice, this means that very complex diagrams can be generated with the 
+second version much faster with `nVennR2` than with `nVennR`.
+
 # Introduction
 
 Proportional Venn diagrams show the relationships between several sets
