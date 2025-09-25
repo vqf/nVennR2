@@ -1,0 +1,4 @@
+useDynLib(nVennR2, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+importFrom("graphics", "plot.new")
+exportPattern("^[[:alpha:]]+")
