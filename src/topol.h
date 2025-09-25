@@ -1630,7 +1630,7 @@ class borderLine
           l << "\n";
         }
         //tolog(toString(__LINE__) + "\n" + l.str());
-        
+
 
         //totalExpectedSurface = 0;
         //for (i = 0; i < w.size(); i++){
@@ -5167,12 +5167,12 @@ public:
       std::string st = "<desc id=\'result\'>";
       std::string nd = "</desc>";
       std::string result = "";
-      UINT cstart = ft.find(st);
+      size_t cstart = ft.find(st);
       if (cstart == std::string::npos){
         setError("Cannot find coordinates");
       }
       else{
-        UINT cnd = ft.find(nd, cstart);
+        size_t cnd = ft.find(nd, cstart);
         if (cnd > cstart && cnd != std::string::npos){
           UINT a = cstart + st.length();
           UINT b = cnd - a;
