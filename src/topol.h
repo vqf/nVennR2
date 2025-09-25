@@ -1276,7 +1276,7 @@ class decider{
   UINT mincycles;
   float totalCompactness;
   float lastCompactness;
-  float bestUntie;
+  //float bestUntie;
   float wRoom;
   bool keep;
 public:
@@ -4788,10 +4788,6 @@ public:
     void setGravityPartitions(){
       std::vector<std::vector<UINT>> gp;
       std::vector<std::vector<UINT>> cs;
-      UINT nels = circles.size();
-      for (UINT i = 0; i < bl.size(); i++){
-        nels += bl[i].size();
-      }
       for (UINT i = 0; i < sceneTranslator.size(); i++){
         if (sceneTranslator[i] > 0){
           std::vector<UINT> t;
@@ -4801,7 +4797,6 @@ public:
         }
       }
       gp.clear();
-      UINT counter = 0;
       for (UINT i = 0; i < bl.size(); i++){
         for (UINT k = 0; k < bl[i].size(); k++){
           for (UINT j = 0; j < circles.size(); j++){
@@ -4816,7 +4811,6 @@ public:
                   found = true;
                   tn = tmp[1];
                 }
-                counter++;
               }
               if (!found){
                 setError("Error in scene translation");
@@ -4824,7 +4818,6 @@ public:
               gp.push_back({counter, tn});
             }
           }
-          counter++;
         }
       }
       /*for (UINT i = 0; i < gp.size(); i++){
@@ -6167,13 +6160,12 @@ public:
               bl[i][j].y = q[1].y;
             }
           }
-          UINT counter = 0;
           UINT lastConserved = 0;
           for (UINT j = 0; j < bl[i].size() - 2; j++){
             float d = distance(bl[i][lastConserved].x, bl[i][lastConserved].y, bl[i][j+1].x, bl[i][j+1].y);
             if (d < (md)){
               bl[i][j].flags = bl[i][j].flags | DELME;
-              counter++;
+              //counter++;
               //tolog("Distance between " + toString(lastConserved) + " and " +
               //      toString(j+1) + " is " + toString(d) + "\n");
               //bl[i].erase(bl[i].begin() + j+ 1);
