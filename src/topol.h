@@ -4603,7 +4603,7 @@ void writeFileText(fileText* tmp, std::string fname = ""){
 }
 
 public:
-    borderLine(){}
+    borderLine(){fromSignature = false;}
     borderLine(std::string description, UINT bycol = 0, const char lineSep = 0x00, std::string fname = "nvenn.txt", std::string outputFile = "result.svg"){
         fromSignature = false;
         setElements = nvenn(description, lineSep, bycol);
