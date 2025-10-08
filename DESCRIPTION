@@ -19,6 +19,6 @@ Suggests:
 Depends: 
     R (>= 3.5)
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)

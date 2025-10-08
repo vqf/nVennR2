@@ -45,7 +45,11 @@ NULL
 
 .lol2string <- function(t){
   result <- ""
-  for (r in names(t)){
+  nms <- names(t)
+  if (is.null(nms)){
+    nms <- as.vector(Map(\(x) paste("Set", x), seq(1:length(t))))
+  }
+  for (r in nms){
     result <- paste(c(result, paste(c(r, t[[r]]), collapse = "\t")) , collapse = "\n")
   }
   return(result)
