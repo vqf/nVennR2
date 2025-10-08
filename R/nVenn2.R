@@ -47,7 +47,8 @@ NULL
   result <- ""
   nms <- names(t)
   if (is.null(nms)){
-    nms <- as.vector(Map(\(x) paste("Set", x), seq(1:length(t))))
+    nms <- as.vector(Map(\(x) paste("Set", x, sep = ''), seq(1:length(t))))
+    names(t) <- nms
   }
   for (r in nms){
     result <- paste(c(result, paste(c(r, t[[r]]), collapse = "\t")) , collapse = "\n")

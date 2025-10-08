@@ -82,7 +82,7 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
   else{
     std::string dsc;
     if (sv.size() > 0){
-      StringVector s1 = as<StringVector>(sv[0]);
+      List s1 = as<List>(sv[0]);
       if (sv.size() == 1 && s1.size() == 1){ //Text
         dsc = as<std::string>(s1[0]);
         if (std::filesystem::exists(dsc)){
