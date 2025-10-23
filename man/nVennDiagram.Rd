@@ -10,6 +10,7 @@ nVennDiagram(
   outFile = "",
   systemShow = FALSE,
   verbose = TRUE,
+  greedy = FALSE,
   byCol = 0L
 )
 }
@@ -29,6 +30,11 @@ open the resulting
 svg figure in the default editor. Defaults to false.}
 
 \item{verbose}{If true, shows messages as the nVenn plot is created.}
+
+\item{greedy}{If true, the simulation uses all the available computing
+resources. This may be slightly faster, but it will leave the process
+unresponsive until the simulation is finished. No messages will be shown,
+regardless of \code{verbose}.}
 
 \item{byCol}{If the input is a text, this parameter indicates whether
 each set is a column (1) or a row (2). Defaults to 0, which means that

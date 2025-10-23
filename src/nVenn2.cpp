@@ -6,22 +6,27 @@ using namespace Rcpp;
 
 
 
-void nvSimulate(borderLine& bl, bool verbose){
-  UINT step = 1;
-  UINT maxStep = 8;
-  bool goon = bl.setStep(step);
-  while (step < maxStep && goon){
-    bl.setCycle(step);
-    if (bl.err()){
-      Rcout << bl.errorMsg() << std::endl;
-      step = maxStep;
-    }
-    if (bl.isStepFinished(step)){
-      if (verbose){
-        Rcout << "Step " << step << " finished." << std::endl;
+void nvSimulate(borderLine& bl, bool verbose, bool greedy){
+  if (greedy){
+    bl.simulate();
+  }
+  else{
+    UINT step = 1;
+    UINT maxStep = 8;
+    bool goon = bl.setStep(step);
+    while (step < maxStep && goon){
+      bl.setCycle(step);
+      if (bl.err()){
+        Rcout << bl.errorMsg() << std::endl;
+        step = maxStep;
       }
-      step++;
-      goon = bl.setStep(step);
+      if (bl.isStepFinished(step)){
+        if (verbose){
+          Rcout << "Step " << step << " finished." << std::endl;
+        }
+        step++;
+        goon = bl.setStep(step);
+      }
     }
   }
 }
@@ -53,6 +58,10 @@ SEXP toRObject(std::string desc, float opacity = 0.4,
 //' open the resulting 
 //' svg figure in the default editor. Defaults to false. 
 //' @param verbose If true, shows messages as the nVenn plot is created.
+//' @param greedy If true, the simulation uses all the available computing
+//' resources. This may be slightly faster, but it will leave the process 
+//' unresponsive until the simulation is finished. No messages will be shown, 
+//' regardless of `verbose`.
 //' @param byCol If the input is a text, this parameter indicates whether 
 //' each set is a column (1) or a row (2). Defaults to 0, which means that 
 //' the package will try to guess which possibility makes more sense.
@@ -69,7 +78,7 @@ SEXP toRObject(std::string desc, float opacity = 0.4,
 //' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
 // [[Rcpp::export]]
 SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool systemShow=false,
-                    bool verbose = true, unsigned int byCol = 0){
+                    bool verbose = true, bool greedy = false, unsigned int byCol = 0){
   List sv = desc;
   bool correct = true;
   borderLine bl;
@@ -103,7 +112,7 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
     }
   }
   if (correct){
-    nvSimulate(bl, verbose);
+    nvSimulate(bl, verbose, greedy);
     if (bl.err()){
       Rcout << bl.errorMsg() << std::endl;
       return R_NilValue;

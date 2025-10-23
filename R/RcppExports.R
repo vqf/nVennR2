@@ -14,6 +14,10 @@
 #' open the resulting 
 #' svg figure in the default editor. Defaults to false. 
 #' @param verbose If true, shows messages as the nVenn plot is created.
+#' @param greedy If true, the simulation uses all the available computing
+#' resources. This may be slightly faster, but it will leave the process 
+#' unresponsive until the simulation is finished. No messages will be shown, 
+#' regardless of `verbose`.
 #' @param byCol If the input is a text, this parameter indicates whether 
 #' each set is a column (1) or a row (2). Defaults to 0, which means that 
 #' the package will try to guess which possibility makes more sense.
@@ -28,8 +32,8 @@
 #' describes a valid text file path, the contents of the file will be used.
 #' @examples
 #' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
-nVennDiagram <- function(desc, plot = TRUE, outFile = "", systemShow = FALSE, verbose = TRUE, byCol = 0L) {
-    .Call(`_nVennR2_nVennDiagram`, desc, plot, outFile, systemShow, verbose, byCol)
+nVennDiagram <- function(desc, plot = TRUE, outFile = "", systemShow = FALSE, verbose = TRUE, greedy = FALSE, byCol = 0L) {
+    .Call(`_nVennR2_nVennDiagram`, desc, plot, outFile, systemShow, verbose, greedy, byCol)
 }
 
 #' Creates nVenn plot
