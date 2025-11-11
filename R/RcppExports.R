@@ -93,12 +93,13 @@ getVennRegion <- function(nVennObj, n) {
 #' @param nVennObj nVennR2 object generated with [nVennDiagram()].
 #' @param showEmpty If true, lists every region, even if empty. 
 #' If false (default), only lists regions containing elements.
-#' @return Nothing. The result is printed.
+#' @return List of non-empty regions with the elements contained
 #' @examples
 #' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
-#' listVennRegions(myv)
+#' mylist <- listVennRegions(myv)
+#' mylist
 listVennRegions <- function(nVennObj, showEmpty = FALSE) {
-    invisible(.Call(`_nVennR2_listVennRegions`, nVennObj, showEmpty))
+    .Call(`_nVennR2_listVennRegions`, nVennObj, showEmpty)
 }
 
 #' Get the svg code of an nVenn diagram

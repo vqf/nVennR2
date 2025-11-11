@@ -13,12 +13,13 @@ listVennRegions(nVennObj, showEmpty = FALSE)
 If false (default), only lists regions containing elements.}
 }
 \value{
-Nothing. The result is printed.
+List of non-empty regions with the elements contained
 }
 \description{
 Lists the elements in every region of the diagram
 }
 \examples{
 myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
-listVennRegions(myv)
+mylist <- listVennRegions(myv)
+mylist
 }

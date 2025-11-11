@@ -238,28 +238,31 @@ List getVennRegion(List nVennObj, SEXP n) {
 //' @param nVennObj nVennR2 object generated with [nVennDiagram()].
 //' @param showEmpty If true, lists every region, even if empty. 
 //' If false (default), only lists regions containing elements.
-//' @return Nothing. The result is printed.
+//' @return List of non-empty regions with the elements contained
 //' @examples
 //' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
-//' listVennRegions(myv)
+//' mylist <- listVennRegions(myv)
+//' mylist
 // [[Rcpp::export]]
-void listVennRegions(List nVennObj, bool showEmpty = false) {
+List listVennRegions(List nVennObj, bool showEmpty = false) {
   borderLine bl;
   bl.restoreBl(as<std::string>(nVennObj["desc"]));
   std::vector<std::string> sets = bl.getSetNames();
   unsigned int tnreg = 1 << sets.size();
+  List result;
   for (unsigned int v = 0; v < tnreg; v++){
     std::vector<std::string> rv = bl.getVennRegionVector(v);
     if (rv.size() > 0 || showEmpty){
       std::string rdesc = bl.regionDescription(v);
-      Rcout << "Region " << v << " " << rdesc << ":" << std::endl;
+      result[rdesc] = wrap(rv);
+      //Rcout << "Region " << v << " " << rdesc << ":" << std::endl;
       
-      for (unsigned int i = 0; i < rv.size(); i++){
-        Rcout << "\t" << rv[i] << std::endl;
-      }
+      //for (unsigned int i = 0; i < rv.size(); i++){
+      //  Rcout << "\t" << rv[i] << std::endl;
+      //}
     }
   }
-  return;
+  return result;
 }
 
 //' Get the svg code of an nVenn diagram

@@ -122,7 +122,8 @@ getVennRegion(myv, c('SAS', 'R'))
 We can also list all the elements by region.
 
 ```{r listRegions}
-listVennRegions(myv)
+regs <- listVennRegions(myv)
+regs
 ```
 
 # Appearance

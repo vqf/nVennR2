@@ -65,14 +65,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // listVennRegions
-void listVennRegions(List nVennObj, bool showEmpty);
+List listVennRegions(List nVennObj, bool showEmpty);
 RcppExport SEXP _nVennR2_listVennRegions(SEXP nVennObjSEXP, SEXP showEmptySEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type nVennObj(nVennObjSEXP);
     Rcpp::traits::input_parameter< bool >::type showEmpty(showEmptySEXP);
-    listVennRegions(nVennObj, showEmpty);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(listVennRegions(nVennObj, showEmpty));
+    return rcpp_result_gen;
 END_RCPP
 }
 // getVennSvg
