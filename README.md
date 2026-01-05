@@ -11,6 +11,17 @@ with the number of non-empty regions, rather than with the number of sets. In
 practice, this means that very complex diagrams can be generated with the 
 second version much faster with `nVennR2` than with `nVennR`.
 
+# Installation
+
+```{r}
+devtools::install_github("vqf/nVennR2")
+```
+If you want to use the vignette, install with:
+
+```{r}
+devtools::install_github("vqf/nVennR2", build_vignettes=TRUE)
+```
+
 # Introduction
 
 Proportional Venn diagrams show the relationships between several sets
