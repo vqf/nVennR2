@@ -3,3 +3,4 @@ inst/doc
 *.o
 *.png
 src/nVennR2.so
+.positai

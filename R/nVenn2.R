@@ -51,7 +51,8 @@ NULL
     names(t) <- nms
   }
   for (r in nms){
-    result <- paste(c(result, paste(c(r, t[[r]]), collapse = "\t")) , collapse = "\n")
+    rname <- gsub( "[ ;,\t]", "_", r)
+    result <- paste(c(result, paste(c(rname, t[[r]]), collapse = "\t")) , collapse = "\n")
   }
   return(result)
 }
