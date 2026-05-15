@@ -6,9 +6,10 @@ using namespace Rcpp;
 
 
 
-void nvSimulate(borderLine& bl, bool verbose, bool greedy){
-  if (greedy){
-    bl.simulate();
+void nvSimulate(borderLine& bl, bool verbose, unsigned int maxlevel){
+  if (maxlevel > 0){
+    maxlevel--;
+    bl.simulate(true, maxlevel);
   }
   else{
     UINT step = 1;
@@ -45,6 +46,60 @@ SEXP toRObject(std::string desc, float opacity = 0.4,
   return(r);
 }
 
+
+//' Estimates the time taken by minimization steps when preparing a diagram with
+//' the exhaustive method at a given depth
+//'
+//' @param desc Description of sets, either as a file path, a list of lists, text or a 
+//' previously created nVenn object (see [nVennDiagram()]).
+//' @param maxlevel Depth of the exhaustive search. See the `maxlevel` parameter 
+//' of [nVennDiagram()] for details. 
+//' @param byCol If the input is a text, this parameter indicates whether 
+//' each set is a column (1) or a row (2). Defaults to 0, which means that 
+//' the package will try to guess which possibility makes more sense.
+// [[Rcpp::export]]
+float estimateExhaustiveRunTime(SEXP desc, unsigned int maxlevel = 0, 
+                                unsigned int byCol = 0){
+  if (maxlevel > 0){
+    maxlevel--;
+  }
+  List sv = desc;
+  float result = 0;
+  bool correct = true;
+  borderLine bl;
+  Function asNamespace("asNamespace");
+  Environment nv_env = asNamespace("nVennR2");
+  if (sv.containsElementNamed("desc")){
+    bl.restoreBl(as<std::string>(sv["desc"]));
+  }
+  else{
+    std::string dsc;
+    if (sv.size() > 0){
+      List s1 = as<List>(sv[0]);
+      if (sv.size() == 1 && s1.size() == 1){ //Text
+        dsc = as<std::string>(s1[0]);
+        if (std::filesystem::exists(dsc)){
+          dsc = getFileText(dsc);
+        }
+      }
+      else{
+        Function f = nv_env[".lol2string"];
+        dsc = as<std::string>(f(desc));
+      }
+    }
+    bl = borderLine(dsc, byCol);
+    if (bl.err()){
+      Rcout << bl.errorMsg() << std::endl;
+      Rcout << "If you are trying to use a file, please make sure that the path exists" << std::endl;
+      correct = false;
+    }
+  }
+  if (correct){
+    result = bl.estimateExhaustiveRunTime(maxlevel);
+  }
+  return result;
+}
+
 //' Creates nVenn plot
 //'
 //' @param desc Description of sets, either as a file path, a list of lists, text or a 
@@ -58,9 +113,15 @@ SEXP toRObject(std::string desc, float opacity = 0.4,
 //' open the resulting 
 //' svg figure in the default editor. Defaults to false. 
 //' @param verbose If true, shows messages as the nVenn plot is created.
-//' @param greedy If true, the simulation uses all the available computing
-//' resources. This may be slightly faster, but it will leave the process 
-//' unresponsive until the simulation is finished. No messages will be shown, 
+//' @param maxlevel If higher than zero, the simulation uses an exhaustive
+//' algorithm for the minimization steps. The number will represent the 
+//' depth of the search. With a dept of one, every exchange of two regions
+//' will be explored. With a depth of two, every exchange of four regions
+//' will be explored. The computing resources necessary for this exploration
+//' increase extremely fast with the depth, so users are advised to use
+//' [estimateExhaustiveRunTime()] to determine whether it is feasible to use
+//' this procedure. The process will be unresponsive during the simulation and 
+//' no messages will be shown, 
 //' regardless of `verbose`.
 //' @param byCol If the input is a text, this parameter indicates whether 
 //' each set is a column (1) or a row (2). Defaults to 0, which means that 
@@ -78,7 +139,7 @@ SEXP toRObject(std::string desc, float opacity = 0.4,
 //' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
 // [[Rcpp::export]]
 SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool systemShow=false,
-                    bool verbose = true, bool greedy = false, unsigned int byCol = 0){
+                    bool verbose = true, unsigned int maxlevel = 0, unsigned int byCol = 0){
   List sv = desc;
   bool correct = true;
   borderLine bl;
@@ -112,7 +173,7 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
     }
   }
   if (correct){
-    nvSimulate(bl, verbose, greedy);
+    nvSimulate(bl, verbose, maxlevel);
     if (bl.err()){
       Rcout << bl.errorMsg() << std::endl;
       return R_NilValue;

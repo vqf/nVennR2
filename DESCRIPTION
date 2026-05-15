@@ -15,10 +15,12 @@ Suggests:
     rmarkdown,
     rsvg,
     graphics,
-    grImport2
+    grImport2,
+    testthat (>= 3.0.0)
 Depends: 
     R (>= 3.5)
 LazyData: true
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3

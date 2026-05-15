@@ -10,9 +10,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// estimateExhaustiveRunTime
+float estimateExhaustiveRunTime(SEXP desc, unsigned int maxlevel, unsigned int byCol);
+RcppExport SEXP _nVennR2_estimateExhaustiveRunTime(SEXP descSEXP, SEXP maxlevelSEXP, SEXP byColSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type desc(descSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxlevel(maxlevelSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type byCol(byColSEXP);
+    rcpp_result_gen = Rcpp::wrap(estimateExhaustiveRunTime(desc, maxlevel, byCol));
+    return rcpp_result_gen;
+END_RCPP
+}
 // nVennDiagram
-SEXP nVennDiagram(SEXP desc, bool plot, std::string outFile, bool systemShow, bool verbose, bool greedy, unsigned int byCol);
-RcppExport SEXP _nVennR2_nVennDiagram(SEXP descSEXP, SEXP plotSEXP, SEXP outFileSEXP, SEXP systemShowSEXP, SEXP verboseSEXP, SEXP greedySEXP, SEXP byColSEXP) {
+SEXP nVennDiagram(SEXP desc, bool plot, std::string outFile, bool systemShow, bool verbose, unsigned int maxlevel, unsigned int byCol);
+RcppExport SEXP _nVennR2_nVennDiagram(SEXP descSEXP, SEXP plotSEXP, SEXP outFileSEXP, SEXP systemShowSEXP, SEXP verboseSEXP, SEXP maxlevelSEXP, SEXP byColSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,9 +34,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type outFile(outFileSEXP);
     Rcpp::traits::input_parameter< bool >::type systemShow(systemShowSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< bool >::type greedy(greedySEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxlevel(maxlevelSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type byCol(byColSEXP);
-    rcpp_result_gen = Rcpp::wrap(nVennDiagram(desc, plot, outFile, systemShow, verbose, greedy, byCol));
+    rcpp_result_gen = Rcpp::wrap(nVennDiagram(desc, plot, outFile, systemShow, verbose, maxlevel, byCol));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -102,6 +115,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_nVennR2_estimateExhaustiveRunTime", (DL_FUNC) &_nVennR2_estimateExhaustiveRunTime, 3},
     {"_nVennR2_nVennDiagram", (DL_FUNC) &_nVennR2_nVennDiagram, 7},
     {"_nVennR2_readVennSVG", (DL_FUNC) &_nVennR2_readVennSVG, 4},
     {"_nVennR2_getVennSetNames", (DL_FUNC) &_nVennR2_getVennSetNames, 1},

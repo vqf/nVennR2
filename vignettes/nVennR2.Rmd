@@ -111,6 +111,20 @@ myv2 <- nVennDiagram(myv2, verbose = F)
 myv2 #noshow
 ```
 
+# Exhaustive mode
+
+In exceptional cases, a user may want to explore the minimization steps in a systematic way. This can be done by setting the `maxlevel` parameter of `nVennDiagram` to some value higher than zero. While this procedure may guarantee an optimal diagram if `maxlevel` is close to the number of regions, it is impractical as the number of regions grows, as the number of combinations to try grows exponentially. Users who want to explore this mode are advised to first get an estimation of the time of computation needed:
+
+```{r exhaustive}
+estTime <- estimateExhaustiveRunTime(exampledf, 4)
+estTime
+if (estTime < 10){
+  myv2 <- nVennDiagram(exampledf, maxlevel = 4)
+}
+myv2 #noshow
+```
+
+
 # Listing elements
 
 Once the diagram is ready, the object returned can be queried to retrieve the elements in each region. A region will usually be represented with a vector of names of the sets it belongs to. In the example with `exampledf`, stored in `myv`, the sets are named `SAS`, `PYTHON` and `R`. To find out which elements belong to `SAS` and `R`, but not to `PYTHON`, the region will be `c('SAS', 'R')`.

@@ -10,7 +10,7 @@ nVennDiagram(
   outFile = "",
   systemShow = FALSE,
   verbose = TRUE,
-  greedy = FALSE,
+  maxlevel = 0L,
   byCol = 0L
 )
 }
@@ -31,9 +31,15 @@ svg figure in the default editor. Defaults to false.}
 
 \item{verbose}{If true, shows messages as the nVenn plot is created.}
 
-\item{greedy}{If true, the simulation uses all the available computing
-resources. This may be slightly faster, but it will leave the process
-unresponsive until the simulation is finished. No messages will be shown,
+\item{maxlevel}{If higher than zero, the simulation uses an exhaustive
+algorithm for the minimization steps. The number will represent the
+depth of the search. With a dept of one, every exchange of two regions
+will be explored. With a depth of two, every exchange of four regions
+will be explored. The computing resources necessary for this exploration
+increase extremely fast with the depth, so users are advised to use
+\code{\link[=estimateExhaustiveRunTime]{estimateExhaustiveRunTime()}} to determine whether it is feasible to use
+this procedure. The process will be unresponsive during the simulation and
+no messages will be shown,
 regardless of \code{verbose}.}
 
 \item{byCol}{If the input is a text, this parameter indicates whether
