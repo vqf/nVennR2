@@ -75,7 +75,9 @@ nVennDiagram <- function(desc, plot = TRUE, outFile = "", systemShow = FALSE, ve
 #' @details In principle, this function should work with any SVG or HTML file
 #' created by nVenn, with either nVennR2, a web interface or nVennPy.
 #' @examples
-#' try(readVennSVG('example.svg'))
+#' if (file.exists('example.svg')){
+#'   readVennSVG('example.svg')
+#' }
 readVennSVG <- function(svgFile, plot = TRUE, outFile = "", systemShow = FALSE) {
     .Call(`_nVennR2_readVennSVG`, svgFile, plot, outFile, systemShow)
 }

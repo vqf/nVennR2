@@ -5491,6 +5491,10 @@ public:
 
     void restoreFromFile(std::string fileName){
       std::string ft = getFileText(fileName);
+      if (ft == ""){
+        setError("Empty file");
+        return;
+      }
       std::string st = "<desc id=\'result\'>";
       std::string nd = "</desc>";
       std::string result = "";
@@ -5563,7 +5567,7 @@ public:
         }
         std::vector<point> newcircles;
         if (el == "C"){ // (There should be a fixed number of circles.) Not anymore!
-            while (el != "S"){
+            while (el != "" && el != "S"){
                 point p;
                 std::getline(sline, el, ';');
                 if (el != "S"){

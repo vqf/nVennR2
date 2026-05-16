@@ -325,35 +325,44 @@ setVennColors <- function(nVennObj, colorList, plot=T){
 #'                exported.
 #' @param systemShow If true, and the system has a default SVG-editing program,
 #'                   opens the figure in the default editor
+#' @returns Nothing
+#' @examples
+#' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
+#' plotVenn(myv) 
 #'
 #' @export
 #'
 plotVenn <- function(nVennObj, outFile='', systemShow = F){
   tfile = outFile
-  if (tfile == "") tfile <- tempfile(fileext = ".svg")
-  #tfile2 <- tempfile(fileext = ".svg")
-  cat(getVennSvg(nVennObj), file=tfile)
-  if (requireNamespace("rsvg", quietly = TRUE) && requireNamespace("grImport2", quietly = TRUE)) {
-    out <- tryCatch(
-      {
-        #rsvg::rsvg_svg(svg = tfile, tfile2)
-        p <- grImport2::readPicture(rawToChar(rsvg::rsvg_svg(svg = tfile)), warn = F)
-        plot.new()
-        
-        grImport2::grid.picture(p)
-      },
-      error=function(cond){
-        message(paste("rsvg or grImport2 reported an error: ", cond))
+  if (nVennObj$desc == ""){
+    message("Incorrect object, not plotted")
+  }
+  else{
+    if (tfile == "") tfile <- tempfile(fileext = ".svg")
+    #tfile2 <- tempfile(fileext = ".svg")
+    cat(getVennSvg(nVennObj), file=tfile)
+    if (requireNamespace("rsvg", quietly = TRUE) && requireNamespace("grImport2", quietly = TRUE)) {
+      out <- tryCatch(
+        {
+          #rsvg::rsvg_svg(svg = tfile, tfile2)
+          p <- grImport2::readPicture(rawToChar(rsvg::rsvg_svg(svg = tfile)), warn = F)
+          plot.new()
+          
+          grImport2::grid.picture(p)
+        },
+        error=function(cond){
+          message(paste("rsvg or grImport2 reported an error: ", cond))
+          message("The figure cannot be rendered in the plot window. Please, use the arguments outFile and/or systemShow.")
+        }
+      )
+    } else {
+      if (systemShow == FALSE && outFile == ''){
         message("The figure cannot be rendered in the plot window. Please, use the arguments outFile and/or systemShow.")
       }
-    )
-  } else {
-    if (systemShow == FALSE && outFile == ''){
-      message("The figure cannot be rendered in the plot window. Please, use the arguments outFile and/or systemShow.")
     }
-  }
-  if (systemShow){
-    utils::browseURL(tfile)
+    if (systemShow){
+      utils::browseURL(tfile)
+    }
   }
 }
 

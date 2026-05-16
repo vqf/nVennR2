@@ -7,6 +7,14 @@
 \description{
 This package creates quasi-proportional Venn diagrams with an arbitrary number of sets. It is related to the old nVennR package, but the algorithm and use have been reworked.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/vqf/nVennR2}
+  \item Report bugs at \url{https://github.com/vqf/nVennR2/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Victor Quesada \email{quesadavictor@uniovi.es} [copyright holder]
 

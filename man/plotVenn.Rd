@@ -15,8 +15,16 @@ exported.}
 \item{systemShow}{If true, and the system has a default SVG-editing program,
 opens the figure in the default editor}
 }
+\value{
+Nothing
+}
 \description{
 The nVenn diagram is generated in the plot window by default. If this is not
 possible, parameters outFile and systemShow may be used to export the SVG
 figure.
+}
+\examples{
+myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
+plotVenn(myv) 
+
 }

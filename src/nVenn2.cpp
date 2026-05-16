@@ -212,21 +212,28 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
 //' @details In principle, this function should work with any SVG or HTML file
 //' created by nVenn, with either nVennR2, a web interface or nVennPy.
 //' @examples
-//' try(readVennSVG('example.svg'))
+//' if (file.exists('example.svg')){
+//'   readVennSVG('example.svg')
+//' }
 // [[Rcpp::export]]
 SEXP readVennSVG(std::string svgFile, bool plot = true, std::string outFile="", bool systemShow=false){
   Function asNamespace("asNamespace");
   Environment nv_env = asNamespace("nVennR2");
   borderLine bl;
+  std::string error = bl.errorMsg();
   bl.restoreFromFile(svgFile);
-  std::string result = bl.saveBl();
-  SEXP r = toRObject(result);
-  Function n = nv_env[".setSetNames"];
-  std::vector<std::string> sn = bl.getSetNames();
-  r = n(r, sn);
-  if (plot){
-    Function f = nv_env["plotVenn"];
-    f(r, outFile, systemShow);
+  SEXP r = toRObject("");
+  std::string errors = bl.errorMsg();
+  if (errors == ""){
+    std::string result = bl.saveBl();
+    r = toRObject(result);
+    Function n = nv_env[".setSetNames"];
+    std::vector<std::string> sn = bl.getSetNames();
+    r = n(r, sn);
+    if (plot){
+      Function f = nv_env["plotVenn"];
+      f(r, outFile, systemShow);
+    }
   }
   return r;
 }
@@ -347,37 +354,41 @@ List listVennRegions(List nVennObj, bool showEmpty = false) {
 // [[Rcpp::export]]
 String getVennSvg(List nVennObj) {
   borderLine bl;
-  bl.restoreBl(as<std::string>(nVennObj["desc"]));
-  List opts = as<List>(nVennObj["opts"]);
-  float opacity = as<float>(opts["opacity"]);
-  unsigned int fontSize = as<unsigned int>(opts["fontSize"]);
-  unsigned int lineWidth = as<unsigned int>(opts["lineWidth"]);
-  unsigned int palette = as<unsigned int>(opts["palette"]);
-  bool showRegions = as<bool>(opts["showRegions"]);
-  bool showWeights = as<bool>(opts["showWeights"]);
-  bl.setSVGOpacity(opacity);
-  bl.setSVGLineWidth(lineWidth);
-  bl.showCircleNumbers(showWeights);
-  bl.showRegionNumbers(showRegions);
-  bl.setFontSize(fontSize);
-  bl.loadPalette(palette);
-  
-  if (nVennObj.containsElementNamed("colors")){
-    nVennObj["setNames"] = bl.getSetNames();
-    List snames = as<List>(nVennObj["setNames"]);
-    List colors = as<List>(nVennObj["colors"]);
+  String result = "";
+  std::string dsc = as<std::string>(nVennObj["desc"]);
+  if (dsc != ""){
+    bl.restoreBl(dsc);
+    List opts = as<List>(nVennObj["opts"]);
+    float opacity = as<float>(opts["opacity"]);
+    unsigned int fontSize = as<unsigned int>(opts["fontSize"]);
+    unsigned int lineWidth = as<unsigned int>(opts["lineWidth"]);
+    unsigned int palette = as<unsigned int>(opts["palette"]);
+    bool showRegions = as<bool>(opts["showRegions"]);
+    bool showWeights = as<bool>(opts["showWeights"]);
+    bl.setSVGOpacity(opacity);
+    bl.setSVGLineWidth(lineWidth);
+    bl.showCircleNumbers(showWeights);
+    bl.showRegionNumbers(showRegions);
+    bl.setFontSize(fontSize);
+    bl.loadPalette(palette);
     
-    for (UINT i = 0; i < snames.length(); i++){
-      std::string sn = as<std::string>(snames[i]);
-      if (colors.containsElementNamed(sn.c_str())){
-        if (as<std::string>(colors[sn]) != "_"){
-          bl.setVennColor(i, colors[sn]);
+    if (nVennObj.containsElementNamed("colors")){
+      nVennObj["setNames"] = bl.getSetNames();
+      List snames = as<List>(nVennObj["setNames"]);
+      List colors = as<List>(nVennObj["colors"]);
+      
+      for (UINT i = 0; i < snames.length(); i++){
+        std::string sn = as<std::string>(snames[i]);
+        if (colors.containsElementNamed(sn.c_str())){
+          if (as<std::string>(colors[sn]) != "_"){
+            bl.setVennColor(i, colors[sn]);
+          }
         }
       }
     }
+    result = bl.tosvg();
   }
-  
-  return bl.tosvg();
+  return result;
 }
 
 
