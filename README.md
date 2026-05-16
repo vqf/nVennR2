@@ -21,6 +21,11 @@ If you want to use the vignette, install with:
 ```{r}
 devtools::install_github("vqf/nVennR2", build_vignettes=TRUE)
 ```
+To install from CRAN,
+
+```{r}
+install.packages('nVennR2', dependencies = T)
+```
 
 # Introduction
 

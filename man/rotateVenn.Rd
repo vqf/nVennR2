@@ -20,3 +20,7 @@ nVenn object.
 \description{
 Rotate a diagram
 }
+\examples{
+myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
+myv <- rotateVenn(myv, 45)
+}

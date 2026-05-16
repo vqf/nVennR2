@@ -11,6 +11,10 @@
 #' @param byCol If the input is a text, this parameter indicates whether 
 #' each set is a column (1) or a row (2). Defaults to 0, which means that 
 #' the package will try to guess which possibility makes more sense.
+#' @returns float Estimated time for steps 3 and 4 in seconds
+#'
+#' @examples
+#' estimateExhaustiveRunTime(exampledf, 4)
 estimateExhaustiveRunTime <- function(desc, maxlevel = 0L, byCol = 0L) {
     .Call(`_nVennR2_estimateExhaustiveRunTime`, desc, maxlevel, byCol)
 }
@@ -70,6 +74,8 @@ nVennDiagram <- function(desc, plot = TRUE, outFile = "", systemShow = FALSE, ve
 #' @returns nVenn object.
 #' @details In principle, this function should work with any SVG or HTML file
 #' created by nVenn, with either nVennR2, a web interface or nVennPy.
+#' @examples
+#' try(readVennSVG('example.svg'))
 readVennSVG <- function(svgFile, plot = TRUE, outFile = "", systemShow = FALSE) {
     .Call(`_nVennR2_readVennSVG`, svgFile, plot, outFile, systemShow)
 }
@@ -145,6 +151,9 @@ getVennSvg <- function(nVennObj) {
 #' counterclockwise.
 #' @param plot If true (default), prints the diagram after the rotation.
 #' @return nVenn object. 
+#' @examples
+#' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
+#' myv <- rotateVenn(myv, 45)
 rotateVenn <- function(nVennObj, angle, plot = TRUE) {
     .Call(`_nVennR2_rotateVenn`, nVennObj, angle, plot)
 }

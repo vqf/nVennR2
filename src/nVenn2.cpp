@@ -57,6 +57,10 @@ SEXP toRObject(std::string desc, float opacity = 0.4,
 //' @param byCol If the input is a text, this parameter indicates whether 
 //' each set is a column (1) or a row (2). Defaults to 0, which means that 
 //' the package will try to guess which possibility makes more sense.
+//' @returns float Estimated time for steps 3 and 4 in seconds
+//'
+//' @examples
+//' estimateExhaustiveRunTime(exampledf, 4)
 // [[Rcpp::export]]
 float estimateExhaustiveRunTime(SEXP desc, unsigned int maxlevel = 0, 
                                 unsigned int byCol = 0){
@@ -207,6 +211,8 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
 //' @returns nVenn object.
 //' @details In principle, this function should work with any SVG or HTML file
 //' created by nVenn, with either nVennR2, a web interface or nVennPy.
+//' @examples
+//' try(readVennSVG('example.svg'))
 // [[Rcpp::export]]
 SEXP readVennSVG(std::string svgFile, bool plot = true, std::string outFile="", bool systemShow=false){
   Function asNamespace("asNamespace");
@@ -382,6 +388,9 @@ String getVennSvg(List nVennObj) {
 //' counterclockwise.
 //' @param plot If true (default), prints the diagram after the rotation.
 //' @return nVenn object. 
+//' @examples
+//' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
+//' myv <- rotateVenn(myv, 45)
 // [[Rcpp::export]]
 SEXP rotateVenn(List nVennObj, float angle, bool plot = true){
   Function asNamespace("asNamespace");
