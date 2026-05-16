@@ -3,9 +3,9 @@
 \docType{package}
 \name{nVennR2-package}
 \alias{nVennR2-package}
-\title{nVennR2: An interface to nVenn2}
+\title{nVennR2: An Interface to 'nVenn2'}
 \description{
-This package creates quasi-proportional Venn diagrams with an arbitrary number of sets. It is related to the old nVennR package, but the algorithm and use have been reworked.
+Creates quasi-proportional Venn diagrams with an arbitrary number of sets. It is related to the old 'nVennR' package, but the algorithm and use have been reworked.
 }
 \seealso{
 Useful links:

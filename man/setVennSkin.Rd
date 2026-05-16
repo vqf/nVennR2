@@ -15,6 +15,9 @@ and \code{colors} to change set colors as in \code{\link[=setVennColors]{setVenn
 
 \item{plot}{If true (default), plots the diagram after the operation.}
 }
+\value{
+nVenn object with skin applied
+}
 \description{
 Set nVenn diagram appearance
 }

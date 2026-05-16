@@ -171,7 +171,7 @@ setVennOpts <- function(nVennObj, opacity = 0.4, fontSize = 12,
 #' The only valid parameters for `params` are those in [setVennOpts()], 
 #' `palette` and `colors`.
 #' 
-#'
+#' @returns nVenn object with skin applied
 #' @export
 #'
 #' @examples

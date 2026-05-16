@@ -4444,6 +4444,10 @@ class borderLine
                 bool incorrect = circleTopol(circles[j], belong, k);
                 if (incorrect){
                   outsiderInfo oi;
+                  oi.dsena = 0;
+                  oi.nextVertex = 0;
+                  oi.outsider = point();
+                  oi.vertex = 0;
                   float minV = -1;
                   for (UINT i = 0; i < bl[k].size(); i++){
                     UINT tvertx = i;
