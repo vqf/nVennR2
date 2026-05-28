@@ -47,7 +47,8 @@ each set is a column (1) or a row (2). Defaults to 0, which means that
 the package will try to guess which possibility makes more sense.}
 }
 \value{
-nVenn object. As a side effect, shows the nVenn plot.
+nVenn object. As a side effect, shows the nVenn plot. In case of
+error, returns null object.
 }
 \description{
 Creates nVenn plot

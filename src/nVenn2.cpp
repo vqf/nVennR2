@@ -18,12 +18,15 @@ void nvSimulate(borderLine& bl, bool verbose, unsigned int maxlevel){
     while (step < maxStep && goon){
       bl.setCycle(step);
       if (bl.err()){
-        Rcout << bl.errorMsg() << std::endl;
+        Function f("message");
+        f(bl.errorMsg());
         step = maxStep;
       }
       if (bl.isStepFinished(step)){
         if (verbose){
-          Rcout << "Step " << step << " finished." << std::endl;
+          Function f("message");
+          Function g("paste");
+          f(g("Step ", step, " finished."));
         }
         step++;
         goon = bl.setStep(step);
@@ -57,7 +60,8 @@ SEXP toRObject(std::string desc, float opacity = 0.4,
 //' @param byCol If the input is a text, this parameter indicates whether 
 //' each set is a column (1) or a row (2). Defaults to 0, which means that 
 //' the package will try to guess which possibility makes more sense.
-//' @returns float Estimated time for steps 3 and 4 in seconds
+//' @returns float Estimated time for steps 3 and 4 in seconds. In case of 
+//' error, the returned value is -1.
 //'
 //' @examples
 //' estimateExhaustiveRunTime(exampledf, 4)
@@ -93,8 +97,10 @@ float estimateExhaustiveRunTime(SEXP desc, unsigned int maxlevel = 0,
     }
     bl = borderLine(dsc, byCol);
     if (bl.err()){
-      Rcout << bl.errorMsg() << std::endl;
-      Rcout << "If you are trying to use a file, please make sure that the path exists" << std::endl;
+      Function f("message");
+      f(bl.errorMsg());
+      f("If you are trying to use a file, please make sure that the path exists");
+      result = -1;
       correct = false;
     }
   }
@@ -130,7 +136,8 @@ float estimateExhaustiveRunTime(SEXP desc, unsigned int maxlevel = 0,
 //' @param byCol If the input is a text, this parameter indicates whether 
 //' each set is a column (1) or a row (2). Defaults to 0, which means that 
 //' the package will try to guess which possibility makes more sense.
-//' @return nVenn object. As a side effect, shows the nVenn plot.
+//' @return nVenn object. As a side effect, shows the nVenn plot. In case of
+//' error, returns null object.
 //' @details A list of lists contains inner lists with a name, which will be 
 //' the corresponding set name. A dataframe can be used in the same way.
 //' 
@@ -170,8 +177,9 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
     }
     bl = borderLine(dsc, byCol);
     if (bl.err()){
-      Rcout << bl.errorMsg() << std::endl;
-      Rcout << "If you are trying to use a file, please make sure that the path exists" << std::endl;
+      Function f("message");
+      f(bl.errorMsg());
+      f("If you are trying to use a file, please make sure that the path exists");
       correct = false;
       return R_NilValue;
     }
@@ -179,7 +187,8 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
   if (correct){
     nvSimulate(bl, verbose, maxlevel);
     if (bl.err()){
-      Rcout << bl.errorMsg() << std::endl;
+      Function f("message");
+      f(bl.errorMsg());
       return R_NilValue;
     }
     else{
@@ -220,7 +229,6 @@ SEXP readVennSVG(std::string svgFile, bool plot = true, std::string outFile="", 
   Function asNamespace("asNamespace");
   Environment nv_env = asNamespace("nVennR2");
   borderLine bl;
-  std::string error = bl.errorMsg();
   bl.restoreFromFile(svgFile);
   SEXP r = toRObject("");
   std::string errors = bl.errorMsg();
@@ -234,6 +242,10 @@ SEXP readVennSVG(std::string svgFile, bool plot = true, std::string outFile="", 
       Function f = nv_env["plotVenn"];
       f(r, outFile, systemShow);
     }
+  }
+  else{
+    Function f("message");
+    f(errors);
   }
   return r;
 }
@@ -279,31 +291,38 @@ List getVennSetNames(List nVennObj){
 //' getVennRegion(myv, c("Set1", "Set2"))
 // [[Rcpp::export]]
 List getVennRegion(List nVennObj, SEXP n) {
-  borderLine bl;
-  bl.restoreBl(as<std::string>(nVennObj["desc"]));
-  List result;
-  if (TYPEOF(n) == STRSXP){
-    StringVector sv = as<StringVector>(n);
-    std::vector<std::string> v(sv.size()); 
-    for (unsigned int i = 0; i < sv.size(); i++){
-      v[i] = as<std::string>(sv(i));
+  Function asNamespace("asNamespace");
+  Environment nv_env = asNamespace("nVennR2");
+  Function ivo = nv_env[".isnVennObj"];
+  bool iscorrect = as<bool>(ivo(nVennObj));
+  if (iscorrect){
+    borderLine bl;
+    bl.restoreBl(as<std::string>(nVennObj["desc"]));
+    List result;
+    if (TYPEOF(n) == STRSXP){
+      StringVector sv = as<StringVector>(n);
+      std::vector<std::string> v(sv.size()); 
+      for (unsigned int i = 0; i < sv.size(); i++){
+        v[i] = as<std::string>(sv(i));
+      }
+      result = bl.getVennRegionVectorL(v);
     }
-    result = bl.getVennRegionVectorL(v);
-  }
-  else if ((TYPEOF(n) == INTSXP) || (TYPEOF(n) == REALSXP)){
-    IntegerVector iv = as<IntegerVector>(n);
-    unsigned int nreg = bl.nregions();
-    unsigned int v = iv(0);
-    if (v <= nreg){
-      std::vector<std::string> rv = bl.getVennRegionVector(v);
-      if (rv.size() > 0){
-        for (unsigned int i = 0; i < rv.size(); i++){
-          result.push_back(rv[i]);
+    else if ((TYPEOF(n) == INTSXP) || (TYPEOF(n) == REALSXP)){
+      IntegerVector iv = as<IntegerVector>(n);
+      unsigned int nreg = bl.nregions();
+      unsigned int v = iv(0);
+      if (v <= nreg){
+        std::vector<std::string> rv = bl.getVennRegionVector(v);
+        if (rv.size() > 0){
+          for (unsigned int i = 0; i < rv.size(); i++){
+            result.push_back(rv[i]);
+          }
         }
       }
     }
+    return result;
   }
-  return result;
+  return R_NilValue;
 }
 
 
@@ -319,24 +338,31 @@ List getVennRegion(List nVennObj, SEXP n) {
 //' mylist
 // [[Rcpp::export]]
 List listVennRegions(List nVennObj, bool showEmpty = false) {
-  borderLine bl;
-  bl.restoreBl(as<std::string>(nVennObj["desc"]));
-  std::vector<std::string> sets = bl.getSetNames();
-  unsigned int tnreg = 1 << sets.size();
-  List result;
-  for (unsigned int v = 0; v < tnreg; v++){
-    std::vector<std::string> rv = bl.getVennRegionVector(v);
-    if (rv.size() > 0 || showEmpty){
-      std::string rdesc = bl.regionDescription(v);
-      result[rdesc] = wrap(rv);
-      //Rcout << "Region " << v << " " << rdesc << ":" << std::endl;
-      
-      //for (unsigned int i = 0; i < rv.size(); i++){
-      //  Rcout << "\t" << rv[i] << std::endl;
-      //}
+  Function asNamespace("asNamespace");
+  Environment nv_env = asNamespace("nVennR2");
+  Function ivo = nv_env[".isnVennObj"];
+  bool iscorrect = as<bool>(ivo(nVennObj));
+  if (iscorrect){
+    borderLine bl;
+    bl.restoreBl(as<std::string>(nVennObj["desc"]));
+    std::vector<std::string> sets = bl.getSetNames();
+    unsigned int tnreg = 1 << sets.size();
+    List result;
+    for (unsigned int v = 0; v < tnreg; v++){
+      std::vector<std::string> rv = bl.getVennRegionVector(v);
+      if (rv.size() > 0 || showEmpty){
+        std::string rdesc = bl.regionDescription(v);
+        result[rdesc] = wrap(rv);
+        //Rcout << "Region " << v << " " << rdesc << ":" << std::endl;
+        
+        //for (unsigned int i = 0; i < rv.size(); i++){
+        //  Rcout << "\t" << rv[i] << std::endl;
+        //}
+      }
     }
+    return result;
   }
-  return result;
+  return R_NilValue;
 }
 
 //' Get the svg code of an nVenn diagram
@@ -353,42 +379,49 @@ List listVennRegions(List nVennObj, bool showEmpty = false) {
 //' getVennSvg(myv)
 // [[Rcpp::export]]
 String getVennSvg(List nVennObj) {
-  borderLine bl;
-  String result = "";
-  std::string dsc = as<std::string>(nVennObj["desc"]);
-  if (dsc != ""){
-    bl.restoreBl(dsc);
-    List opts = as<List>(nVennObj["opts"]);
-    float opacity = as<float>(opts["opacity"]);
-    unsigned int fontSize = as<unsigned int>(opts["fontSize"]);
-    unsigned int lineWidth = as<unsigned int>(opts["lineWidth"]);
-    unsigned int palette = as<unsigned int>(opts["palette"]);
-    bool showRegions = as<bool>(opts["showRegions"]);
-    bool showWeights = as<bool>(opts["showWeights"]);
-    bl.setSVGOpacity(opacity);
-    bl.setSVGLineWidth(lineWidth);
-    bl.showCircleNumbers(showWeights);
-    bl.showRegionNumbers(showRegions);
-    bl.setFontSize(fontSize);
-    bl.loadPalette(palette);
-    
-    if (nVennObj.containsElementNamed("colors")){
-      nVennObj["setNames"] = bl.getSetNames();
-      List snames = as<List>(nVennObj["setNames"]);
-      List colors = as<List>(nVennObj["colors"]);
+  Function asNamespace("asNamespace");
+  Environment nv_env = asNamespace("nVennR2");
+  Function ivo = nv_env[".isnVennObj"];
+  bool iscorrect = as<bool>(ivo(nVennObj));
+  if (iscorrect){
+    borderLine bl;
+    String result = "";
+    std::string dsc = as<std::string>(nVennObj["desc"]);
+    if (dsc != ""){
+      bl.restoreBl(dsc);
+      List opts = as<List>(nVennObj["opts"]);
+      float opacity = as<float>(opts["opacity"]);
+      unsigned int fontSize = as<unsigned int>(opts["fontSize"]);
+      unsigned int lineWidth = as<unsigned int>(opts["lineWidth"]);
+      unsigned int palette = as<unsigned int>(opts["palette"]);
+      bool showRegions = as<bool>(opts["showRegions"]);
+      bool showWeights = as<bool>(opts["showWeights"]);
+      bl.setSVGOpacity(opacity);
+      bl.setSVGLineWidth(lineWidth);
+      bl.showCircleNumbers(showWeights);
+      bl.showRegionNumbers(showRegions);
+      bl.setFontSize(fontSize);
+      bl.loadPalette(palette);
       
-      for (UINT i = 0; i < snames.length(); i++){
-        std::string sn = as<std::string>(snames[i]);
-        if (colors.containsElementNamed(sn.c_str())){
-          if (as<std::string>(colors[sn]) != "_"){
-            bl.setVennColor(i, colors[sn]);
+      if (nVennObj.containsElementNamed("colors")){
+        nVennObj["setNames"] = bl.getSetNames();
+        List snames = as<List>(nVennObj["setNames"]);
+        List colors = as<List>(nVennObj["colors"]);
+        
+        for (UINT i = 0; i < snames.length(); i++){
+          std::string sn = as<std::string>(snames[i]);
+          if (colors.containsElementNamed(sn.c_str())){
+            if (as<std::string>(colors[sn]) != "_"){
+              bl.setVennColor(i, colors[sn]);
+            }
           }
         }
       }
+      result = bl.tosvg();
     }
-    result = bl.tosvg();
+    return result;
   }
-  return result;
+  return "";
 }
 
 
@@ -406,29 +439,34 @@ String getVennSvg(List nVennObj) {
 SEXP rotateVenn(List nVennObj, float angle, bool plot = true){
   Function asNamespace("asNamespace");
   Environment nv_env = asNamespace("nVennR2");
-  borderLine bl;
-  bl.restoreBl(as<std::string>(nVennObj["desc"]));
-  List skin;
-  if (nVennObj.containsElementNamed("opts")){
-    skin = nVennObj["opts"];
+  Function ivo = nv_env[".isnVennObj"];
+  bool iscorrect = as<bool>(ivo(nVennObj));
+  if (iscorrect){
+    borderLine bl;
+    bl.restoreBl(as<std::string>(nVennObj["desc"]));
+    List skin;
+    if (nVennObj.containsElementNamed("opts")){
+      skin = nVennObj["opts"];
+    }
+    if (nVennObj.containsElementNamed("colors")){
+      skin["colors"] = nVennObj["colors"];
+    }
+    float ang = 3.141592 * angle / 180;
+    bl.rotateScene(ang);
+    std::string result = bl.saveBl();
+    SEXP r = toRObject(result);
+    Function n = nv_env[".setSetNames"];
+    std::vector<std::string> sn = bl.getSetNames();
+    r = n(r, sn);
+    Function setSkin = nv_env["setVennSkin"];
+    r = setSkin(r, skin);
+    if (plot){
+      Function p = nv_env["plotVenn"];
+      p(r);
+    }
+    return r;
   }
-  if (nVennObj.containsElementNamed("colors")){
-    skin["colors"] = nVennObj["colors"];
-  }
-  float ang = 3.141592 * angle / 180;
-  bl.rotateScene(ang);
-  std::string result = bl.saveBl();
-  SEXP r = toRObject(result);
-  Function n = nv_env[".setSetNames"];
-  std::vector<std::string> sn = bl.getSetNames();
-  r = n(r, sn);
-  Function setSkin = nv_env["setVennSkin"];
-  r = setSkin(r, skin);
-  if (plot){
-    Function p = nv_env["plotVenn"];
-    p(r);
-  }
-  return r;
+  return R_NilValue;
 }
 
 

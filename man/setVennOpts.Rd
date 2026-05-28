@@ -10,9 +10,9 @@ setVennOpts(
   fontSize = 12,
   lineWidth = 1,
   palette = 0,
-  showRegions = T,
-  showWeights = T,
-  plot = T
+  showRegions = TRUE,
+  showWeights = TRUE,
+  plot = TRUE
 )
 }
 \arguments{

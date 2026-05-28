@@ -4,7 +4,7 @@
 \alias{setVennSkin}
 \title{Set nVenn diagram appearance}
 \usage{
-setVennSkin(nVennObj, params, plot = T)
+setVennSkin(nVennObj, params, plot = TRUE)
 }
 \arguments{
 \item{nVennObj}{nVenn object generated with \code{\link[=nVennDiagram]{nVennDiagram()}}.}

@@ -68,6 +68,20 @@ NULL
   return(obj)
 }
 
+.isnVennObj <- function(nVennObj){
+  result = FALSE
+  if (("nVennObj" %in% class(nVennObj)) && 
+      ("desc" %in% names(nVennObj)) &&
+      nVennObj$desc != ""
+      ){
+    result = TRUE
+  }
+  if (result == FALSE){
+    message("Incorrect nVenn object")
+  }
+  return(result)
+}
+
 .resetvcolors <- function(nVennObj){
   clrs <- list()
   i <- 0
@@ -89,7 +103,7 @@ NULL
 
 .optData <- function(opacity = 0.4, fontSize = 12,
                      lineWidth = 1, palette = 0,
-                     showRegions = T, showWeights = T){
+                     showRegions = TRUE, showWeights = TRUE){
   result <- list()
   result$opacity <- opacity
   result$fontSize <- fontSize
@@ -129,29 +143,34 @@ NULL
 #' myv <- setVennOpts(myv, showRegions=FALSE, opacity=0.2, lineWidth=2)
 setVennOpts <- function(nVennObj, opacity = 0.4, fontSize = 12,
                      lineWidth = 1, palette = 0,
-                     showRegions = T, showWeights = T, plot=T){
-  if (is.null(nVennObj$opts)){
-    nVennObj$opts = .optData()
-  }
-  defaults <- list(opacity = opacity, fontSize = fontSize,
-                   lineWidth = lineWidth, palette = palette,
-                   showRegions = showRegions, showWeights = showWeights
-  )
-  dnames <- names(defaults)
-  passed <- names(match.call())
-  prevOptions <- names(nVennObj$opts)
-  params <- list()
-  allopts <- .validOpts()
-  for (o in passed){
-    if (o %in% allopts){
-      params[[o]] <- defaults[[o]]
+                     showRegions = TRUE, showWeights = TRUE, plot = TRUE){
+  if (.isnVennObj(nVennObj)){
+    if (is.null(nVennObj$opts)){
+      nVennObj$opts = .optData()
     }
+    defaults <- list(opacity = opacity, fontSize = fontSize,
+                     lineWidth = lineWidth, palette = palette,
+                     showRegions = showRegions, showWeights = showWeights
+    )
+    dnames <- names(defaults)
+    passed <- names(match.call())
+    prevOptions <- names(nVennObj$opts)
+    params <- list()
+    allopts <- .validOpts()
+    for (o in passed){
+      if (o %in% allopts){
+        params[[o]] <- defaults[[o]]
+      }
+    }
+    nVennObj <- setVennSkin(nVennObj, params, plot = FALSE)
+    if (plot){
+      plotVenn(nVennObj)
+    }
+    return(nVennObj)
   }
-  nVennObj <- setVennSkin(nVennObj, params, plot = F)
-  if (plot){
-    plotVenn(nVennObj)
+  else{
+    return(NULL)
   }
-  return(nVennObj)
 }
 
 #' Set nVenn diagram appearance
@@ -179,26 +198,29 @@ setVennOpts <- function(nVennObj, opacity = 0.4, fontSize = 12,
 #'               palette=2, colors=c("black"))
 #' myv <- nVennDiagram(exampledf)
 #' myv <- setVennSkin(myv, theme)
-setVennSkin <- function(nVennObj, params, plot=T){
-  valid <- .validOpts()
-  for (p in names(params)){
-    if (p %in% valid){
-      nVennObj$opts[[p]] <- params[[p]]
+setVennSkin <- function(nVennObj, params, plot=TRUE){
+  if (.isnVennObj(nVennObj)){
+    valid <- .validOpts()
+    for (p in names(params)){
+      if (p %in% valid){
+        nVennObj$opts[[p]] <- params[[p]]
+      }
+      else if (p == "palette"){
+        nVennObj <- setVennPalette(nVennObj, params[[p]], plot = FALSE)
+      }
+      else if (p == "colors"){
+        nVennObj <- setVennColors(nVennObj, params[[p]], plot = FALSE)
+      }
+      else{
+        warning(paste("Unrecognized parameter \"", p, "\"", sep = ""))
+      }
     }
-    else if (p == "palette"){
-      nVennObj <- setVennPalette(nVennObj, params[[p]], plot = F)
+    if (plot){
+      plotVenn(nVennObj)
     }
-    else if (p == "colors"){
-      nVennObj <- setVennColors(nVennObj, params[[p]], plot = F)
-    }
-    else{
-      warning(paste("Unrecognized parameter \"", p, "\"", sep = ""))
-    }
+    return(nVennObj)
   }
-  if (plot){
-    plotVenn(nVennObj)
-  }
-  return(nVennObj)
+  return(NULL)
 }
 
 #' Change the color palette for a diagram
@@ -225,13 +247,16 @@ setVennSkin <- function(nVennObj, params, plot=T){
 #' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
 #' myv <- setVennPalette(myv, 2)
 #' myv <- setVennPalette(myv, 3)
-setVennPalette <- function(nVennObj, palette = 0, plot=T){
-  nVennObj <- setVennOpts(nVennObj = nVennObj, palette = palette, plot = F)
-  nVennObj <- .resetvcolors(nVennObj)
-  if (plot){
-    plotVenn(nVennObj)
+setVennPalette <- function(nVennObj, palette = 0, plot=TRUE){
+  if (.isnVennObj(nVennObj)){
+    nVennObj <- setVennOpts(nVennObj = nVennObj, palette = palette, plot = FALSE)
+    nVennObj <- .resetvcolors(nVennObj)
+    if (plot){
+      plotVenn(nVennObj)
+    }
+    return(nVennObj)
   }
-  return(nVennObj)
+  return(NULL)
 }
 
 #' Change a set color
@@ -251,18 +276,21 @@ setVennPalette <- function(nVennObj, palette = 0, plot=T){
 #' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
 #' myv <- setVennColor(myv, "Set2", "black")
 #' myv <- setVennColor(myv, "Set1", "#ffff00")
-setVennColor <- function(nVennObj, setName, color, plot=T){
-  if (setName %in% nVennObj$setNames){
-    nVennObj$colors[[setName]] <- color
+setVennColor <- function(nVennObj, setName, color, plot=TRUE){
+  if (.isnVennObj(nVennObj)){
+    if ("setNames" %in% nVennObj && setName %in% nVennObj$setNames){
+      nVennObj$colors[[setName]] <- color
+    }
+    else{
+      warning(paste("Set \"", setName, "\" does not exist. Use getVennSetNames() to see",
+                  " a list of set names", sep = ""))
+    }
+    if (plot){
+      plotVenn(nVennObj)
+    }
+    return(nVennObj)
   }
-  else{
-    warning(cat("Set\"", setName, "\" does not exist. Use getVennSetNames() to see",
-    " a list of set names", sep = ""))
-  }
-  if (plot){
-    plotVenn(nVennObj)
-  }
-  return(nVennObj)
+  return(NULL)
 }
 
 #' Change set colors
@@ -291,27 +319,30 @@ setVennColor <- function(nVennObj, setName, color, plot=T){
 #' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
 #' mypalette <- c("black", "#ffff00", "red")
 #' myv <- setVennColors(myv, mypalette)
-setVennColors <- function(nVennObj, colorList, plot=T){
-  nVennObj <- .avcolors(nVennObj)
-  sn <- names(colorList)
-  if (is.null(sn)){
-    for (i in 1:length(nVennObj$setNames)){
-      if (i <= length(colorList)){
-        nm <- nVennObj$setNames[i]
-        vl <- colorList[i]
-        nVennObj <- setVennColor(nVennObj, nm, vl, plot = F);
+setVennColors <- function(nVennObj, colorList, plot=TRUE){
+  if (.isnVennObj(nVennObj)){
+    nVennObj <- .avcolors(nVennObj)
+    sn <- names(colorList)
+    if (is.null(sn)){
+      for (i in 1:length(nVennObj$setNames)){
+        if (i <= length(colorList)){
+          nm <- nVennObj$setNames[i]
+          vl <- colorList[i]
+          nVennObj <- setVennColor(nVennObj, nm, vl, plot = FALSE);
+        }
       }
     }
-  }
-  else{
-    for (nm in sn){
-      nVennObj <- setVennColor(nVennObj, nm, colorList[[nm]], plot = F)
+    else{
+      for (nm in sn){
+        nVennObj <- setVennColor(nVennObj, nm, colorList[[nm]], plot = FALSE)
+      }
     }
+    if (plot){
+      plotVenn(nVennObj)
+    }
+    return(nVennObj)
   }
-  if (plot){
-    plotVenn(nVennObj)
-  }
-  return(nVennObj)
+  return(NULL)
 }
 
 #' Plot nVenn diagram
@@ -324,44 +355,47 @@ setVennColors <- function(nVennObj, colorList, plot=T){
 #' @param outFile Path to export the SVG figure. If empty, the figure is not
 #'                exported.
 #' @param systemShow If true, and the system has a default SVG-editing program,
-#'                   opens the figure in the default editor
-#' @returns Nothing
+#'                   opens the figure in the default editor.
+#' @returns Nothing. If `nVennObj` is correct and the system supports it, the 
+#' diagram is plotted in the plot window.
 #' @examples
 #' myv <- nVennDiagram(list(Set1=c("a", "b", "c"), Set2=c("a", "c", "d")), verbose=FALSE)
 #' plotVenn(myv) 
 #'
 #' @export
 #'
-plotVenn <- function(nVennObj, outFile='', systemShow = F){
-  tfile = outFile
-  if (nVennObj$desc == ""){
-    message("Incorrect object, not plotted")
-  }
-  else{
-    if (tfile == "") tfile <- tempfile(fileext = ".svg")
-    #tfile2 <- tempfile(fileext = ".svg")
-    cat(getVennSvg(nVennObj), file=tfile)
-    if (requireNamespace("rsvg", quietly = TRUE) && requireNamespace("grImport2", quietly = TRUE)) {
-      out <- tryCatch(
-        {
-          #rsvg::rsvg_svg(svg = tfile, tfile2)
-          p <- grImport2::readPicture(rawToChar(rsvg::rsvg_svg(svg = tfile)), warn = F)
-          plot.new()
-          
-          grImport2::grid.picture(p)
-        },
-        error=function(cond){
-          message(paste("rsvg or grImport2 reported an error: ", cond))
+plotVenn <- function(nVennObj, outFile='', systemShow = FALSE){
+  if (.isnVennObj(nVennObj)){
+    tfile = outFile
+    if (!("desc" %in% names(nVennObj)) || nVennObj$desc == ""){
+      message("Incorrect object, not plotted")
+    }
+    else{
+      if (tfile == "") tfile <- tempfile(fileext = ".svg")
+      #tfile2 <- tempfile(fileext = ".svg")
+      cat(getVennSvg(nVennObj), file=tfile)
+      if (requireNamespace("rsvg", quietly = TRUE) && requireNamespace("grImport2", quietly = TRUE)) {
+        out <- tryCatch(
+          {
+            #rsvg::rsvg_svg(svg = tfile, tfile2)
+            p <- grImport2::readPicture(rawToChar(rsvg::rsvg_svg(svg = tfile)), warn = FALSE)
+            plot.new()
+            
+            grImport2::grid.picture(p)
+          },
+          error=function(cond){
+            message(paste("rsvg or grImport2 reported an error: ", cond))
+            message("The figure cannot be rendered in the plot window. Please, use the arguments outFile and/or systemShow.")
+          }
+        )
+      } else {
+        if (systemShow == FALSE && outFile == ''){
           message("The figure cannot be rendered in the plot window. Please, use the arguments outFile and/or systemShow.")
         }
-      )
-    } else {
-      if (systemShow == FALSE && outFile == ''){
-        message("The figure cannot be rendered in the plot window. Please, use the arguments outFile and/or systemShow.")
       }
-    }
-    if (systemShow){
-      utils::browseURL(tfile)
+      if (systemShow){
+        utils::browseURL(tfile)
+      }
     }
   }
 }

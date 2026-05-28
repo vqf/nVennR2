@@ -4,7 +4,7 @@
 \alias{plotVenn}
 \title{Plot nVenn diagram}
 \usage{
-plotVenn(nVennObj, outFile = "", systemShow = F)
+plotVenn(nVennObj, outFile = "", systemShow = FALSE)
 }
 \arguments{
 \item{nVennObj}{nVenn object.}
@@ -13,10 +13,11 @@ plotVenn(nVennObj, outFile = "", systemShow = F)
 exported.}
 
 \item{systemShow}{If true, and the system has a default SVG-editing program,
-opens the figure in the default editor}
+opens the figure in the default editor.}
 }
 \value{
-Nothing
+Nothing. If \code{nVennObj} is correct and the system supports it, the
+diagram is plotted in the plot window.
 }
 \description{
 The nVenn diagram is generated in the plot window by default. If this is not

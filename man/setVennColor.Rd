@@ -4,7 +4,7 @@
 \alias{setVennColor}
 \title{Change a set color}
 \usage{
-setVennColor(nVennObj, setName, color, plot = T)
+setVennColor(nVennObj, setName, color, plot = TRUE)
 }
 \arguments{
 \item{nVennObj}{nVenn object created with \code{\link[=nVennDiagram]{nVennDiagram()}}.}

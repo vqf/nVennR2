@@ -3,6 +3,10 @@
 \name{nVennR2}
 \alias{nVennR2}
 \title{nVennR2}
+\value{
+nVennObj. An nVenn object with the information needed to represent
+and edit the diagram, and to explore its regions.
+}
 \description{
 An interface to nVenn2 to create n-dimensional, quasi-proportional Venn
 diagrams.

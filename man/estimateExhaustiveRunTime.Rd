@@ -19,7 +19,8 @@ each set is a column (1) or a row (2). Defaults to 0, which means that
 the package will try to guess which possibility makes more sense.}
 }
 \value{
-float Estimated time for steps 3 and 4 in seconds
+float Estimated time for steps 3 and 4 in seconds. In case of
+error, the returned value is -1.
 }
 \description{
 Estimates the time taken by minimization steps when preparing a diagram with

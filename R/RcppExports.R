@@ -11,7 +11,8 @@
 #' @param byCol If the input is a text, this parameter indicates whether 
 #' each set is a column (1) or a row (2). Defaults to 0, which means that 
 #' the package will try to guess which possibility makes more sense.
-#' @returns float Estimated time for steps 3 and 4 in seconds
+#' @returns float Estimated time for steps 3 and 4 in seconds. In case of 
+#' error, the returned value is -1.
 #'
 #' @examples
 #' estimateExhaustiveRunTime(exampledf, 4)
@@ -45,7 +46,8 @@ estimateExhaustiveRunTime <- function(desc, maxlevel = 0L, byCol = 0L) {
 #' @param byCol If the input is a text, this parameter indicates whether 
 #' each set is a column (1) or a row (2). Defaults to 0, which means that 
 #' the package will try to guess which possibility makes more sense.
-#' @return nVenn object. As a side effect, shows the nVenn plot.
+#' @return nVenn object. As a side effect, shows the nVenn plot. In case of
+#' error, returns null object.
 #' @details A list of lists contains inner lists with a name, which will be 
 #' the corresponding set name. A dataframe can be used in the same way.
 #' 

@@ -4,7 +4,7 @@
 \alias{setVennPalette}
 \title{Change the color palette for a diagram}
 \usage{
-setVennPalette(nVennObj, palette = 0, plot = T)
+setVennPalette(nVennObj, palette = 0, plot = TRUE)
 }
 \arguments{
 \item{nVennObj}{nVenn object created with \code{\link[=nVennDiagram]{nVennDiagram()}}.}

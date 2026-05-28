@@ -25,6 +25,9 @@
 #' [setVennColors()]. If a plot is saved, the resulting svg file can be 
 #' loaded again with [readVennSVG()].
 #' 
+#' @return nVennObj. An nVenn object with the information needed to represent 
+#' and edit the diagram, and to explore its regions.
+#' 
 #' @author Victor Quesada, Universidad de Oviedo (Spain).
 #' @examples
 #' library(nVennR2)
