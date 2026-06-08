@@ -119,9 +119,9 @@ In exceptional cases, a user may want to explore the minimization steps in a sys
 estTime <- estimateExhaustiveRunTime(exampledf, 4)
 estTime
 if (estTime < 10){
-  myv2 <- nVennDiagram(exampledf, maxlevel = 4)
+  myvEx <- nVennDiagram(exampledf, maxlevel = 4)
+  myvEx #noshow
 }
-myv2 #noshow
 ```
 
 
@@ -177,7 +177,7 @@ myv2 <- setVennPalette(myv2, palette = 2)
 myv2 #noshow
 ```
 
-The other way to change several colors at once is `setVennColors`. When using this function, it is understood that we want to set a theme. That is why this function resets any unspecified color to the palette we are using. If a vector with svg colors is passed, they will be applied to each set in the same order. If there are more sets than colors, the remaining sets keep their previous color.
+The other way to change several colors at once is `setVennColors`. If a vector with svg colors is passed, they will be applied to each set in the same order. If there are more sets than colors, the remaining sets keep their previous color.
 
 ```{r colorVector}
 colorVector <- c("red", "grey")
@@ -193,7 +193,7 @@ myv2 <- setVennColors(myv2, colorList)
 myv2 #noshow
 ```
 
-Notice that the color of `Set2` has been reset to its default in palette 2.
+
 
 ## Set skin
 

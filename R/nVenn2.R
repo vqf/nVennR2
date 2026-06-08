@@ -94,7 +94,7 @@ NULL
 }
 
 .avcolors <- function(nVennObj){
-  if (!("colors" %in% nVennObj)){
+  if (!("colors" %in% names(nVennObj))){
     #nVennObj$setNames <- unlist(getVennSetNames(nVennObj))
     nVennObj <- .resetvcolors(nVennObj)
   }
@@ -278,7 +278,7 @@ setVennPalette <- function(nVennObj, palette = 0, plot=TRUE){
 #' myv <- setVennColor(myv, "Set1", "#ffff00")
 setVennColor <- function(nVennObj, setName, color, plot=TRUE){
   if (.isnVennObj(nVennObj)){
-    if ("setNames" %in% nVennObj && setName %in% nVennObj$setNames){
+    if ("setNames" %in% names(nVennObj) && setName %in% nVennObj$setNames){
       nVennObj$colors[[setName]] <- color
     }
     else{
