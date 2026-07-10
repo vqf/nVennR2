@@ -1,3 +1,5 @@
 # nVennR2 (development version)
 
-* Added a `NEWS.md` file to track changes to the package.
+* Added new citation.
+* Fixed a bug that affected function `setVennColor()`. Also added a test
+to prevent future bugs of that type.

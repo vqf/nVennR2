@@ -10,14 +10,8 @@ use Rcpp.
 2. Unable to verify current time. This seems to depend on devtools::check()
 and gives inconsistent results.
 
-Actions after first review:
-1. Functions now feature "TRUE" instead of "T" and "FALSE" instead of "F".
-2. Added a \value to nVennR2.Rd (using the @return tag in the corresponding
-roxygen entry).
-3. Avoided unsuppressible messages:
-  3.1. Exchanged "cat" with "paste" inside warning at `setVennColor` function.
-  3.2. Exchanged "Rcout" calls with "message()" calls at `nvSimulate` (not 
-  exported), `estimateExhaustiveRunTime` and `nVennDiagram`.
+Changes since last version:
 
-I would like to thank the reviewer for clearly explaining the issues and the
-solutions.
+1. Added new citation.
+2. Fixed a bug that affected function `setVennColor()`. Also added a test
+to prevent future bugs of that type.

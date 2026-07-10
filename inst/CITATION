@@ -1,4 +1,4 @@
-citHeader("To cite nVennR in publications use:")
+citHeader("To cite nVennR2 in publications use:")
 
 bibentry(
   bibtype  = "Article",
@@ -7,8 +7,13 @@ bibentry(
                person("Maria", "Gonzalez-Pereira"),
                person("Magda R.", "Hamczyk"),
                person("Victor", "Quesada")),
-  journal  = "bioRxiv",
+  journal  = "Bioinformatics Advances",
   year     = 2026,
+  volume   = 6,
+  number   = 1,
+  pages    = "vbag183",
+  doi      = "10.1093/bioadv/vbag183",
+  url      = "https://doi.org/10.1093/bioadv/vbag183",
   textVersion = paste(
     
   )
