@@ -235,7 +235,6 @@ typedef struct blData{
   float margin;
   float totalCircleV;
   float totalLineV;
-  bool increasedDT;
   int contacts;
   UINT ncycles;
   UINT maxRunningTime;
@@ -252,6 +251,7 @@ typedef struct blData{
                            // the surface, the current point will also stick
   std::string inputFile;
   std::string fname;
+  UINT provokeError; // For debugging. 0 - no error; 10 - topol at init; 20 - cannot solve topol
 } blData;
 
 
@@ -1487,7 +1487,7 @@ class borderLine
     void initBlData(blData* b){
       b->sk = 1e3f;
       b->dt = 0.025f;
-      b->mindt = b->dt / 100;
+      b->mindt = b->dt / 1000;
       b->maxdt = b->dt;
       b->baseBV = 5.0f;
 
@@ -1497,6 +1497,7 @@ class borderLine
       b->fixCircles = false;
       b->signalEnd = false;
       b->smoothSVG = false;
+      b->optimize = true;
       b->part = false;
       b->surfRatio = 0;
       b->minSurfRatio = 0;
@@ -1515,6 +1516,8 @@ class borderLine
       b->cyclesForStability = 100;
       b->contactFunction = 0; // contact()
       b->maxRunningTime = 200; // 300 seconds to finish the first part
+      b->lineAir = 0;
+      b->provokeError = 0;
     }
 
     void init(){
@@ -1602,12 +1605,12 @@ class borderLine
         groups = g;
         currentStep = attract;
         ngroups = g.size();
+        /**/
+        init();
         blSettings.inputFile = inputFile;
         blSettings.fname = outputFile;
         blSettings.minratio = 0.1f * (ngroups * ngroups * ngroups)/ (4 * 4 * 4);
         blSettings.lineAir = ngroups;
-        /**/
-        init();
         for (UINT i = 0; i < tw.size(); i++){
           w.push_back(tw[i][1]);
         }
@@ -3277,7 +3280,15 @@ class borderLine
               if (newComp < opt->getBestCompactness()){
                 opt->setBestCompactness(newComp);
                 tolog("Swapping " + toString(i) + " with " + toString(candidate) + " -> " + toString(newComp) + "\n");
-                //std::cout << "Level " << level << ": Swapping " << i << " with " << candidate << " -> " << newComp << std::endl;
+                //// Delete later!!
+                //swapCoords(i, candidate);
+                //showCrossings();
+                //writeSVG("/home/vqf/web/steps/v3/before.svg");
+                //swapCoords(i, candidate);
+                //showCrossings();
+                //writeSVG("/home/vqf/web/steps/v3/after.svg");
+                ////
+                //std::cout << "Swapping " << i << " with " << candidate << " -> " << newComp << std::endl;
               }
               else if (newComp == opt->getBestCompactness()){
                 float newUntie = (this->*untieFunct)();
@@ -3286,6 +3297,17 @@ class borderLine
                 if (newUntie > untie){
                   swapCoords(i, candidate);
                   //std::cout << "Level " << level << ": Did not swap on untie\n" << std::endl;
+                }
+                else{
+                  //// Delete later!!
+                  //swapCoords(i, candidate);
+                  //showCrossings();
+                  //writeSVG("/home/vqf/web/steps/v3/before.svg");
+                  //swapCoords(i, candidate);
+                  //showCrossings();
+                  //writeSVG("/home/vqf/web/steps/v3/after.svg");
+                  //std::cout << "Tie-Swapping " << i << " with " << candidate << " -> " << newComp << std::endl;
+                  ////
                 }
               }
               else{
@@ -4681,8 +4703,6 @@ class borderLine
         }
       }
       bl = useme;
-      writeSVG("delme.svg");
-      exit(0);
     }
 
     UINT countOutsiders(){
@@ -5299,25 +5319,26 @@ public:
     void scSolve(){
       blSettings.dt = tosolve.solve(blSettings.dt, resetV);
       bool incorrect = checkTopol();
-      while (incorrect){
+      while (incorrect || blSettings.provokeError == 10 || blSettings.provokeError == 20){
         restorePrevState();
         evaluation.init();
         incorrect = checkTopol();
-        if (incorrect){
+        if (incorrect || blSettings.provokeError == 10){
           setError("Topol problems at start of simulation");
           //std::cout << croack() << std::endl;
           return;
         }
         //tolog(_L_ + "Bad topol\n");
         udt.report();
-        if (blSettings.dt < blSettings.mindt){
+        if (blSettings.dt < blSettings.mindt || blSettings.provokeError == 20){
           if (doublings < maxdoublings){
             doubleThePoints();
           }
           else{
             tolog(_L_ + "Cannot solve topol problems\n");
-            writeSVG("error.svg");
+            //writeSVG("error.svg");
             setError("Cannot solve topol problems");
+            return;
           }
         }
         blSettings.dt = udt.cdt();
@@ -5335,7 +5356,7 @@ public:
       if (blSettings.optimize && keepDistCounter.isMax()){
           keepDist(avgStartDist);
           if (checkTopol()){
-            writeSVG("error.svg");
+            //writeSVG("error.svg");
             listOutsiders();
             tolog(_L_ + "Break on KeepDist\n");
             restorePrevState();
@@ -6528,7 +6549,7 @@ public:
           }
           bl[i] = rb;
           if (checkTopol()){
-            writeSVG("error.svg");
+            //writeSVG("error.svg");
             tolog("Backup after keepDist\n");
             bl[i] = backup;
           }
@@ -6745,6 +6766,10 @@ public:
 
     bool err(){
       return error;
+    }
+
+    void returnError(UINT errorno = 0){
+      blSettings.provokeError = errorno;
     }
 
     /** \brief Inits the conditions for a given step

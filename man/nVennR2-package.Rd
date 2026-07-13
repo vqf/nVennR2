@@ -18,5 +18,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Victor Quesada \email{quesadavictor@uniovi.es} [copyright holder]
 
+Authors:
+\itemize{
+  \item Victor Quesada \email{quesadavictor@uniovi.es} [copyright holder]
+}
+
 }
 \keyword{internal}

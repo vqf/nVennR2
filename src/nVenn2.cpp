@@ -181,19 +181,18 @@ SEXP nVennDiagram(SEXP desc, bool plot = true, std::string outFile="", bool syst
       f(bl.errorMsg());
       f("If you are trying to use a file, please make sure that the path exists");
       correct = false;
-      return R_NilValue;
+      //return R_NilValue;
     }
   }
+  //bl.returnError(10);
   if (correct){
     nvSimulate(bl, verbose, maxlevel);
     if (bl.err()){
       Function f("message");
       f(bl.errorMsg());
-      return R_NilValue;
+      //return R_NilValue;
     }
-    else{
-      result = bl.saveBl();
-    }
+    result = bl.saveBl();
   }
   SEXP r = toRObject(result);
   Function n = nv_env[".setSetNames"];
