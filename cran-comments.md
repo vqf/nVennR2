@@ -12,7 +12,7 @@ and gives inconsistent results.
 ## Resubmission
 This is a resubmision. In this version I have:
 
-1. Eliminated unused and uninitialized variable, the likely cause of the
-`gcc-UBSAN` failure.
-2. Added graceful failure for rare unsolvable cases, the likely cause of the
-`noLD` failure.
+1. Initialized a second `bool` that was not immediately initialized, the likely 
+cause of the `gcc-UBSAN` warning. I could reproduce the error with `r-debug` and
+the change fixed it.
+2. Spelled `TRUE` and `FALSE` at the tests, as per CRAN policy.
