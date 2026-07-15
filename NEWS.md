@@ -1,5 +1,7 @@
 # nVennR2 (development version)
 
+* Fixed `gcc-UBSAN` issue.
+
 # nVennR2 2.0.3
 
 * Added graceful failure for rare unsolvable cases.
